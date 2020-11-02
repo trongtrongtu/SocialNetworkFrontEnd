@@ -41,7 +41,6 @@ const StyledA = styled(A)`
 const Home = () => {
   const [{ auth }] = useStore();
   const [modalPostId, setModalPostId] = useState(null);
-  let dataAll = []
   const variables = {
     userId: auth.user.id,
     skip: 0,
