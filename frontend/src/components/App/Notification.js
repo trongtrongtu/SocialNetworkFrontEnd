@@ -86,7 +86,7 @@ const Notification = ({ notification, close }) => {
           },
           refetchQueries: () => [{ query: GET_AUTH_USER }],
         });
-      } catch (err) {}
+      } catch (err) { }
     };
 
     updateNotificationSeen();
@@ -117,7 +117,7 @@ const Notification = ({ notification, close }) => {
       {notification.like && (
         <Action>
           likes your photo
-          <A to={generatePath(Routes.POST, { id: notification.like.post.id })}>
+          <A to={generatePath(Routes.POST, { id: notification.like.post._id })}>
             <PostImage>
               <Image src={notification.like.post.image} />
             </PostImage>
@@ -128,7 +128,7 @@ const Notification = ({ notification, close }) => {
       {notification.comment && (
         <Action>
           commented on your photo
-          <A to={generatePath(Routes.POST, { id: notification.comment.post.id })}>
+          <A to={generatePath(Routes.POST, { id: notification.comment.post._id })}>
             <PostImage>
               <Image src={notification.comment.post.image} />
             </PostImage>

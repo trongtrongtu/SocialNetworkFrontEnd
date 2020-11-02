@@ -143,7 +143,7 @@ const PostCard = ({ author, imagePublicId, comments, title, createdAt, image, li
           {
             query: GET_FOLLOWED_POSTS,
             variables: {
-              userId: auth.user.id,
+              userId: auth.user._id,
               skip: 0,
               limit: HOME_PAGE_POSTS_LIMIT,
             },
@@ -159,7 +159,7 @@ const PostCard = ({ author, imagePublicId, comments, title, createdAt, image, li
           },
         ],
       });
-    } catch (err) {}
+    } catch (err) { }
 
     setIsOptionOpen(false);
   };
@@ -226,7 +226,7 @@ const PostCard = ({ author, imagePublicId, comments, title, createdAt, image, li
 
               <Comments>
                 {comments.map((comment) => (
-                  <Comment key={comment.id} comment={comment} postId={postId} postAuthor={author} />
+                  <Comment key={comment._id} comment={comment} postId={postId} postAuthor={author} />
                 ))}
               </Comments>
             </>

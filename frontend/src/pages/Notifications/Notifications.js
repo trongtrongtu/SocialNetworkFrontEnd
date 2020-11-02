@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import { useQuery } from '@apollo/client';
 
@@ -15,6 +15,8 @@ import { useStore } from 'store';
 import { GET_USER_NOTIFICATION } from 'graphql/notification';
 
 import { NOTIFICATIONS_PAGE_NOTIFICATION_LIMIT } from 'constants/DataLimit';
+
+import { getListNotification } from '../../networking/Server'
 
 const Root = styled(Container)`
   margin-top: ${(p) => p.theme.spacing.lg};
@@ -40,13 +42,25 @@ const Notifications = () => {
     variables,
     notifyOnNetworkStatusChange: true,
   });
+  const [dataArr, setDataArr] = useState([]);
+  const refreshDataFromServer = () => {
+    getListNotification().then((data) => {
+      setDataArr(data)
+    }).catch((error) => {
+      console.error(error);
+    });
+  }
+
+  useEffect(() => {
+    refreshDataFromServer()
+  }, []);
 
   const renderContent = () => {
     if (loading && networkStatus === 1) {
       return <Skeleton height={56} bottom="xxs" count={NOTIFICATIONS_PAGE_NOTIFICATION_LIMIT} />;
     }
 
-    const { notifications, count } = data.getUserNotifications;
+    const { notifications, count } = dataArr.getUserNotifications;
     if (!notifications.length) {
       return <Empty text="No notifications yet." />;
     }
@@ -65,8 +79,8 @@ const Notifications = () => {
           return (
             <>
               <List>
-                {data.map((notification) => (
-                  <Notification key={notification.id} notification={notification} close={() => false} />
+                {notifications.map((notification) => (
+                  <Notification key={notification._id} notification={notification} close={() => false} />
                 ))}
               </List>
 

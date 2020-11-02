@@ -1,4 +1,4 @@
-import React, { useState, Fragment } from 'react';
+import React, { useEffect, useState, Fragment } from 'react';
 import styled from 'styled-components';
 import { generatePath } from 'react-router-dom';
 import { useQuery } from '@apollo/client';
@@ -21,7 +21,7 @@ import { useStore } from 'store';
 import { HOME_PAGE_POSTS_LIMIT } from 'constants/DataLimit';
 
 import * as Routes from 'routes';
-
+import { getListPost } from '../../networking/Server'
 const Empty = styled.div`
   padding: ${(p) => p.theme.spacing.sm};
   border: 1px solid ${(p) => p.theme.colors.border.main};
@@ -41,6 +41,7 @@ const StyledA = styled(A)`
 const Home = () => {
   const [{ auth }] = useStore();
   const [modalPostId, setModalPostId] = useState(null);
+  let dataAll = []
   const variables = {
     userId: auth.user.id,
     skip: 0,
@@ -50,6 +51,18 @@ const Home = () => {
     variables,
     notifyOnNetworkStatusChange: true,
   });
+  const [dataArr, setDataArr] = useState([]);
+  const refreshDataFromServer = () => {
+    getListPost().then((data) => {
+      setDataArr(data)
+    }).catch((error) => {
+      console.error(error);
+    });
+  }
+
+  useEffect(() => {
+    refreshDataFromServer();
+  }, []);
 
   const closeModal = () => {
     window.history.pushState('', '', '/');
@@ -66,7 +79,8 @@ const Home = () => {
       return <Skeleton height={500} bottom="lg" top="lg" count={HOME_PAGE_POSTS_LIMIT} />;
     }
 
-    const { posts, count } = data.getFollowedPosts;
+    const { posts, count } = dataArr.getFollowedPosts;
+
     if (!posts.length) {
       return (
         <Empty>
@@ -86,26 +100,25 @@ const Home = () => {
       >
         {(data) => {
           const showNextLoading = loading && networkStatus === 3 && count !== data.length;
-
           return (
             <Fragment>
               {data.map((post) => (
-                <Fragment key={post.id}>
-                  <Modal open={modalPostId === post.id} onClose={closeModal}>
-                    <PostPopup id={post.id} closeModal={closeModal} />
+                <Fragment key={post._id}>
+                  <Modal open={modalPostId === post._id} onClose={closeModal}>
+                    <PostPopup id={post._id} closeModal={closeModal} />
                   </Modal>
 
                   <Spacing bottom="lg" top="lg">
                     <PostCard
                       author={post.author}
                       imagePublicId={post.imagePublicId}
-                      postId={post.id}
+                      postId={post._id}
                       comments={post.comments}
                       createdAt={post.createdAt}
                       title={post.title}
                       image={post.image}
                       likes={post.likes}
-                      openModal={() => openModal(post.id)}
+                      openModal={() => openModal(post._id)}
                     />
                   </Spacing>
                 </Fragment>
