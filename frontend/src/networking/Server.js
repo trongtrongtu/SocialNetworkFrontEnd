@@ -10,6 +10,16 @@ async function getListPost() {
   }
 }
 
+async function getPostDetail(postId) {
+  try {
+    let response = await fetch(`${IpAddress}/post_detail?postId=${postId}`);
+    let responseJson = await response.json();
+    return responseJson.data;
+  } catch (error) {
+    console.error(`Error is : ${error}`);
+  }
+}
+
 async function getListNotification() {
   try {
     let response = await fetch(`${IpAddress}/list_all_notification`);
@@ -40,4 +50,4 @@ async function getListPostUser(userId) {
   }
 }
 
-export { getListPost, getListNotification, getProfile, getListPostUser };
+export { getListPost, getListNotification, getProfile, getListPostUser, getPostDetail };

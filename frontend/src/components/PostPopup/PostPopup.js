@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import { withRouter } from 'react-router-dom';
 import styled from 'styled-components';
@@ -13,6 +13,7 @@ import Head from 'components/Head';
 import PostPopupInfo from './PostPopupInfo';
 import PostPopupComments from './PostPopupComments';
 import PostPopupOptions from './PostPopupOptions';
+import { getPostDetail } from '../../networking/Server'
 
 import { GET_POST } from 'graphql/post';
 
@@ -104,10 +105,23 @@ const PostPopup = ({ id, closeModal, usedInModal }) => {
     variables: { id },
   });
 
+  const [dataArr, setDataArr] = useState([]);
+  const refreshDataFromServer = (postId) => {
+    getPostDetail(postId).then((data) => {
+      setDataArr(data)
+    }).catch((error) => {
+      console.error(error);
+    });
+  }
+
+  useEffect(() => {
+    refreshDataFromServer(id);
+  }, [id]);
+
   if (loading) return <Loading top="lg" />;
   if (error) return <NotFound />;
 
-  const post = data.getPost;
+  const post = dataArr.getPost;
 
   return (
     <Root usedInModal={usedInModal}>
@@ -133,13 +147,13 @@ const PostPopup = ({ id, closeModal, usedInModal }) => {
             <PostPopupComments
               usedInModal={usedInModal}
               comments={post.comments}
-              postId={post.id}
+              postId={post._id}
               postAuthor={post.author}
             />
           </Spacing>
 
           <Spacing>
-            <PostPopupOptions postId={post.id} postAuthor={post.author} postLikes={post.likes} />
+            <PostPopupOptions postId={post._id} postAuthor={post.author} postLikes={post.likes} />
 
             <CreateComment post={post} />
           </Spacing>
