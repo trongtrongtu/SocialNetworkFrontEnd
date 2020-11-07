@@ -92,7 +92,7 @@ const ProfileInfo = ({ user }) => {
   const [{ auth }] = useStore();
 
   const { data, loading } = useSubscription(IS_USER_ONLINE_SUBSCRIPTION, {
-    variables: { authUserId: auth.user.id, userId: user.id },
+    variables: { authUserId: auth.user.id, userId: user._id },
   });
 
   let isUserOnline = user.isOnline;
@@ -102,11 +102,11 @@ const ProfileInfo = ({ user }) => {
 
   return (
     <Root>
-      <ProfileCoverUpload userId={user.id} coverImage={user.coverImage} coverImagePublicId={user.coverImagePublicId} />
+      <ProfileCoverUpload userId={user._id} coverImage={user.coverImage} coverImagePublicId={user.coverImagePublicId} />
 
       <ProfileImage>
         <ProfileImageUpload
-          userId={user.id}
+          userId={user._id}
           image={user.image}
           imagePublicId={user.imagePublicId}
           username={user.username}
@@ -115,14 +115,14 @@ const ProfileInfo = ({ user }) => {
         <FullName>
           <H1>{user.fullName}</H1>
 
-          {isUserOnline && auth.user.id !== user.id && <Online />}
+          {isUserOnline && auth.user.id !== user._id && <Online />}
 
-          {auth.user.id !== user.id && (
+          {auth.user.id !== user._id && (
             <FollowAndMessage>
               <Follow user={user} />
 
               <Spacing left="sm" />
-              <Message to={generatePath(Routes.MESSAGES, { userId: user.id })}>Message</Message>
+              <Message to={generatePath(Routes.MESSAGES, { userId: user._id })}>Message</Message>
             </FollowAndMessage>
           )}
         </FullName>

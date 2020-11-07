@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import { withRouter } from 'react-router-dom';
 import { useQuery } from '@apollo/client';
@@ -15,6 +15,8 @@ import Head from 'components/Head';
 import { GET_USER } from 'graphql/user';
 
 import { useStore } from 'store';
+import { getProfile } from '../../networking/Server'
+
 
 const Root = styled.div`
   width: 100%;
@@ -35,6 +37,19 @@ const Profile = ({ match }) => {
     variables: { username },
   });
 
+  const [dataArr, setDataArr] = useState([]);
+  const refreshDataFromServer = (userId) => {
+    getProfile(userId).then((data) => {
+      setDataArr(data)
+    }).catch((error) => {
+      console.error(error);
+    });
+  }
+
+  useEffect(() => {
+    refreshDataFromServer('5f91b839d2a91e3e08cb8451')
+  }, []);
+
   const renderContent = () => {
     if (loading) {
       return (
@@ -49,11 +64,11 @@ const Profile = ({ match }) => {
       );
     }
 
-    if (error || !data.getUser) return <NotFound />;
+    if (error || !dataArr.getUser) return <NotFound />;
 
     return (
       <Container padding="xxs">
-        <ProfileInfo user={data.getUser} />
+        <ProfileInfo user={dataArr.getUser} />
 
         <Container maxWidth="sm">
           <Spacing top="lg" bottom="lg">

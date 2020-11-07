@@ -9,6 +9,7 @@ async function getListPost() {
     console.error(`Error is : ${error}`);
   }
 }
+
 async function getListNotification() {
   try {
     let response = await fetch(`${IpAddress}/list_all_notification`);
@@ -18,14 +19,25 @@ async function getListNotification() {
     console.error(`Error is : ${error}`);
   }
 }
-async function getProductsWithCategoryFromServer(params) {
+
+async function getProfile(userId) {
   try {
-    const category_name = params;
-    let response = await fetch(`http://${IpAddress}:3001/list_products_with_category?category_name=${category_name}`);
+    let response = await fetch(`${IpAddress}/profile?userId=${userId}`);
     let responseJson = await response.json();
     return responseJson.data;
   } catch (error) {
     console.error(`Error is : ${error}`);
   }
 }
-export { getListPost, getListNotification };
+
+async function getListPostUser(userId) {
+  try {
+    let response = await fetch(`${IpAddress}/list_all_post_user?userId=${userId}`);
+    let responseJson = await response.json();
+    return responseJson.data;
+  } catch (error) {
+    console.error(`Error is : ${error}`);
+  }
+}
+
+export { getListPost, getListNotification, getProfile, getListPostUser };

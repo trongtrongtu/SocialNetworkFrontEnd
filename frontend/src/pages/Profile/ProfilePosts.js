@@ -1,4 +1,4 @@
-import React, { Fragment, useState } from 'react';
+import React, { Fragment, useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { useQuery } from '@apollo/client';
 import { generatePath } from 'react-router-dom';
@@ -11,6 +11,7 @@ import { Spacing } from 'components/Layout';
 import InfiniteScroll from 'components/InfiniteScroll';
 import { Loading } from 'components/Loading';
 import Empty from 'components/Empty';
+import { getListPostUser } from '../../networking/Server'
 
 import { PROFILE_PAGE_POSTS_LIMIT } from 'constants/DataLimit';
 
@@ -41,11 +42,24 @@ const ProfilePosts = ({ username }) => {
     setIsPostPopupOpen(false);
   };
 
+  const [dataArr, setDataArr] = useState([]);
+  const refreshDataFromServer = (userId) => {
+    getListPostUser(userId).then((data) => {
+      setDataArr(data)
+    }).catch((error) => {
+      console.error(error);
+    });
+  }
+
+  useEffect(() => {
+    refreshDataFromServer('5f91b839d2a91e3e08cb8451')
+  }, []);
+
   if (loading && networkStatus === 1) {
     return <Skeleton height={500} bottom="lg" top="lg" count={PROFILE_PAGE_POSTS_LIMIT} />;
   }
 
-  const { posts, count } = data.getUserPosts;
+  const { posts, count } = dataArr.getUserPosts;
   if (!posts.length > 0) {
     return (
       <Spacing bottom="lg">
@@ -67,24 +81,24 @@ const ProfilePosts = ({ username }) => {
           const showNextLoading = loading && networkStatus === 3 && data.length - 1 === i;
 
           return (
-            <Fragment key={post.id}>
-              {modalPostId === post.id && (
+            <Fragment key={post._id}>
+              {modalPostId === post._id && (
                 <Modal open={isPostPopupOpen} onClose={closeModal}>
-                  <PostPopup id={post.id} closeModal={closeModal} />
+                  <PostPopup id={post._id} closeModal={closeModal} />
                 </Modal>
               )}
 
               <Spacing bottom="lg">
                 <PostCard
                   author={post.author}
-                  postId={post.id}
+                  postId={post._id}
                   imagePublicId={post.imagePublicId}
                   comments={post.comments}
                   title={post.title}
                   image={post.image}
                   likes={post.likes}
                   createdAt={post.createdAt}
-                  openModal={() => openModal(post.id)}
+                  openModal={() => openModal(post._id)}
                 />
               </Spacing>
 
