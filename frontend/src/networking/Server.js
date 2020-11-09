@@ -40,6 +40,16 @@ async function getProfile(userId) {
   }
 }
 
+async function getAuthUser(userId) {
+  try {
+    let response = await fetch(`${IpAddress}/authUser?userId=${userId}`);
+    let responseJson = await response.json();
+    return responseJson.data;
+  } catch (error) {
+    console.error(`Error is : ${error}`);
+  }
+}
+
 async function getListPostUser(userId) {
   try {
     let response = await fetch(`${IpAddress}/list_all_post_user?userId=${userId}`);
@@ -50,4 +60,4 @@ async function getListPostUser(userId) {
   }
 }
 
-export { getListPost, getListNotification, getProfile, getListPostUser, getPostDetail };
+export { getListPost, getListNotification, getProfile, getListPostUser, getPostDetail, getAuthUser };

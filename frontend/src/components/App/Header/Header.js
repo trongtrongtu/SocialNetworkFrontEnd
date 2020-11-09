@@ -175,8 +175,8 @@ const Header = ({ location, toggleSideBar }) => {
         <RightSide>
           <Spacing right="md">
             <Button ghost onClick={() => handleIconClick('MESSAGE')}>
-              {auth.user.newConversations.length > 0 && (
-                <MessageCount>{auth.user.newConversations.length}</MessageCount>
+              {auth.user.newConversations && auth.user.newConversations.length > 0 && (
+                <MessageCount>{auth.user.newConversations && auth.user.newConversations.length}</MessageCount>
               )}
 
               <EnvelopeOpenIcon />
@@ -185,8 +185,8 @@ const Header = ({ location, toggleSideBar }) => {
 
           <Spacing right="md">
             <Button ghost onClick={() => handleIconClick('NOTIFICATION')}>
-              {auth.user.newNotifications.length > 0 && (
-                <NotificationCount>{auth.user.newNotifications.length}</NotificationCount>
+              {auth.user.newNotifications && auth.user.newNotifications.length > 0 && (
+                <NotificationCount>{auth.user.newNotifications && auth.user.newNotifications.length}</NotificationCount>
               )}
               <NotificationIcon />
             </Button>

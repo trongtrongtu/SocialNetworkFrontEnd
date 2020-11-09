@@ -42,7 +42,7 @@ const Home = () => {
   const [{ auth }] = useStore();
   const [modalPostId, setModalPostId] = useState(null);
   const variables = {
-    userId: auth.user.id,
+    userId: auth.user._id,
     skip: 0,
     limit: HOME_PAGE_POSTS_LIMIT,
   };

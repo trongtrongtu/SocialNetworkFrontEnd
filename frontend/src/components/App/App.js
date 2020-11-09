@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useQuery } from '@apollo/client';
 import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
 
@@ -14,6 +14,7 @@ import AuthLayout from 'pages/Auth/AuthLayout';
 import NotFound from 'components/NotFound';
 import AppLayout from './AppLayout';
 import ScrollToTop from './ScrollToTop';
+import { getAuthUser } from '../../networking/Server'
 
 import { useStore } from 'store';
 
@@ -24,6 +25,19 @@ const App = () => {
   const [{ message }] = useStore();
 
   const { loading, subscribeToMore, data, error, refetch } = useQuery(GET_AUTH_USER);
+
+  const [dataArr, setDataArr] = useState([]);
+  const refreshDataFromServer = (userId) => {
+    getAuthUser(userId).then((data) => {
+      setDataArr(data)
+    }).catch((error) => {
+      console.error(error);
+    });
+  }
+
+  useEffect(() => {
+    refreshDataFromServer('5f9d08346f52c81af3d6932d');
+  }, []);
 
   useEffect(() => {
     const unsubscribe = subscribeToMore({
@@ -116,18 +130,17 @@ const App = () => {
     const prodErrorMessage = "Sorry, something went wrong. We're working on getting this fixed as soon as we can.";
     return <NotFound message={isDevelopment ? devErrorMessage : prodErrorMessage} showHomePageLink={false} />;
   }
-
   return (
     <Router>
       <GlobalStyle />
 
       <ScrollToTop>
         <Switch>
-          {data.getAuthUser ? (
-            <Route exact render={() => <AppLayout authUser={data.getAuthUser} />} />
+          {dataArr.getAuthUser ? (
+            <Route exact render={() => <AppLayout authUser={dataArr.getAuthUser} />} />
           ) : (
-            <Route exact render={() => <AuthLayout refetch={refetch} />} />
-          )}
+              <Route exact render={() => <AuthLayout refetch={refetch} />} />
+            )}
         </Switch>
       </ScrollToTop>
 
