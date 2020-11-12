@@ -45,7 +45,7 @@ const Follow = ({ user }) => {
   const options = {
     create: {
       mutation: CREATE_FOLLOW,
-      variables: { userId: user.id, followerId: auth.user.id },
+      variables: { userId: user.id, followerId: auth.user._id },
     },
     delete: {
       mutation: DELETE_FOLLOW,
@@ -55,11 +55,11 @@ const Follow = ({ user }) => {
   const [mutate] = useMutation(options[operation].mutation, {
     refetchQueries: [
       { query: GET_AUTH_USER },
-      { query: GET_POSTS, variables: { authUserId: auth.user.id } },
+      { query: GET_POSTS, variables: { authUserId: auth.user._id } },
       {
         query: GET_FOLLOWED_POSTS,
         variables: {
-          userId: auth.user.id,
+          userId: auth.user._id,
           skip: 0,
           limit: HOME_PAGE_POSTS_LIMIT,
         },
@@ -75,7 +75,7 @@ const Follow = ({ user }) => {
     });
 
     // Create or Delete mutation for follow
-    if (auth.user.id === user.id) return setLoading(false);
+    if (auth.user._id === user.id) return setLoading(false);
     await notification.toggle({
       user,
       hasDone: isFollowing,

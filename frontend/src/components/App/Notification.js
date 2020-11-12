@@ -81,7 +81,7 @@ const Notification = ({ notification, close }) => {
           mutation: UPDATE_NOTIFICATION_SEEN,
           variables: {
             input: {
-              userId: auth.user.id,
+              userId: auth.user._id,
             },
           },
           refetchQueries: () => [{ query: GET_AUTH_USER }],
@@ -90,7 +90,7 @@ const Notification = ({ notification, close }) => {
     };
 
     updateNotificationSeen();
-  }, [auth.user.id, auth.user.newNotifications.length, client]);
+  }, [auth.user._id, auth.user.newNotifications.length, client]);
 
   if (!notification.follow && !notification.like && !notification.comment) {
     return null;

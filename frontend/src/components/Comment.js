@@ -65,19 +65,19 @@ const Comment = ({ comment, postId, postAuthor }) => {
   const notification = useNotifications();
   const [deleteComment] = useMutation(DELETE_COMMENT, {
     refetchQueries: [
-      { query: GET_FOLLOWED_POSTS, variables: { userId: auth.user.id } },
+      { query: GET_FOLLOWED_POSTS, variables: { userId: auth.user._id } },
       { query: GET_USER, variables: { username: comment.author.username } },
       { query: GET_AUTH_USER },
-      { query: GET_POSTS, variables: { authUserId: auth.user.id } },
+      { query: GET_POSTS, variables: { authUserId: auth.user._id } },
       { query: GET_POST, variables: { id: postId } },
     ],
   });
 
   const handleDeleteComment = async () => {
-    await deleteComment({ variables: { input: { id: comment.id } } });
+    await deleteComment({ variables: { input: { id: comment._id } } });
 
     // Delete notification after comment deletion
-    if (auth.user.id !== postAuthor.id) {
+    if (auth.user._id !== postAuthor._id) {
       const isNotified = postAuthor.notifications.find((n) => n.comment && n.comment.id === comment.id);
       notification.remove({
         notificationId: isNotified.id,
@@ -96,7 +96,7 @@ const Comment = ({ comment, postId, postAuthor }) => {
       </A>
 
       <CommentSection>
-        {comment.author.id === auth.user.id && (
+        {comment.author._id === auth.user._id && (
           <DeleteButton onClick={handleDeleteComment}>
             <CloseIcon width="10" />
           </DeleteButton>

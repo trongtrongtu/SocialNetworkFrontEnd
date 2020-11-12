@@ -79,7 +79,7 @@ const MessagesChatHeading = ({ location, match, chatUser }) => {
 
   const { data, loading } = useSubscription(IS_USER_ONLINE_SUBSCRIPTION, {
     variables: {
-      authUserId: auth.user.id,
+      authUserId: auth.user._id,
       userId: chatUser ? chatUser.id : null,
     },
     skip: !chatUser,

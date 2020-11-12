@@ -62,7 +62,7 @@ const PostCardOption = ({ postId, author, closeOption, deletePost }) => {
 
   return (
     <Root>
-      {auth.user.id !== author.id && (
+      {auth.user._id !== author._id && (
         <FollowItem>
           <Follow user={author} />
         </FollowItem>
@@ -72,7 +72,7 @@ const PostCardOption = ({ postId, author, closeOption, deletePost }) => {
         Copy link
       </StyledButton>
 
-      {auth.user.id === author.id && (
+      {auth.user._id === author._id && (
         <StyledButton fullWidth text onClick={deletePost}>
           Delete post
         </StyledButton>

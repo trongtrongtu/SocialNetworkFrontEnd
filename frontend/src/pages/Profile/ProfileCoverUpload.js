@@ -81,14 +81,14 @@ const ProfileCoverUpload = ({ coverImagePublicId, coverImage, userId }) => {
         mutation: UPLOAD_PHOTO,
         variables: {
           input: {
-            id: auth.user.id,
+            id: auth.user._id,
             image: file,
             imagePublicId: coverImagePublicId,
             isCover: true,
           },
         },
         refetchQueries: () => [
-          { query: GET_FOLLOWED_POSTS, variables: { userId: auth.user.id } },
+          { query: GET_FOLLOWED_POSTS, variables: { userId: auth.user._id } },
           { query: GET_AUTH_USER },
           { query: GET_USER, variables: { username: auth.user.username } },
         ],
@@ -112,7 +112,7 @@ const ProfileCoverUpload = ({ coverImagePublicId, coverImage, userId }) => {
 
       {loading && <Loading top="xl" size="xl" />}
 
-      {auth.user.id === userId && (
+      {auth.user._id === userId && (
         <Label htmlFor="coverImage">
           <UploadImageIcon width="14" color="white" />
         </Label>

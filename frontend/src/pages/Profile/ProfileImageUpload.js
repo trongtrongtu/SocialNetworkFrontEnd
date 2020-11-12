@@ -86,9 +86,9 @@ const ProfileImageUpload = ({ userId, image, imagePublicId, username }) => {
     try {
       await client.mutate({
         mutation: UPLOAD_PHOTO,
-        variables: { input: { id: auth.user.id, image: file, imagePublicId } },
+        variables: { input: { id: auth.user._id, image: file, imagePublicId } },
         refetchQueries: () => [
-          { query: GET_FOLLOWED_POSTS, variables: { userId: auth.user.id } },
+          { query: GET_FOLLOWED_POSTS, variables: { userId: auth.user._id } },
           { query: GET_AUTH_USER },
           { query: GET_USER, variables: { username: auth.user.username } },
         ],
@@ -108,7 +108,7 @@ const ProfileImageUpload = ({ userId, image, imagePublicId, username }) => {
     return image ? <Image src={image} alt="profile" accept="image/x-png,image/jpeg" /> : <UserIcon width="172" />;
   };
 
-  const authUser = auth.user.id === userId;
+  const authUser = auth.user._id === userId;
 
   return (
     <>

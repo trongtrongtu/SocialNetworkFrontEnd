@@ -92,7 +92,7 @@ const ProfileInfo = ({ user }) => {
   const [{ auth }] = useStore();
 
   const { data, loading } = useSubscription(IS_USER_ONLINE_SUBSCRIPTION, {
-    variables: { authUserId: auth.user.id, userId: user._id },
+    variables: { authUserId: auth.user._id, userId: user._id },
   });
 
   let isUserOnline = user.isOnline;
@@ -115,9 +115,9 @@ const ProfileInfo = ({ user }) => {
         <FullName>
           <H1>{user.fullName}</H1>
 
-          {isUserOnline && auth.user.id !== user._id && <Online />}
+          {isUserOnline && auth.user._id !== user._id && <Online />}
 
-          {auth.user.id !== user._id && (
+          {auth.user._id !== user._id && (
             <FollowAndMessage>
               <Follow user={user} />
 

@@ -90,7 +90,7 @@ const CreatePost = () => {
       {
         query: GET_FOLLOWED_POSTS,
         variables: {
-          userId: auth.user.id,
+          userId: auth.user._id,
           skip: 0,
           limit: HOME_PAGE_POSTS_LIMIT,
         },
@@ -139,7 +139,7 @@ const CreatePost = () => {
     e.preventDefault();
     try {
       await createPost({
-        variables: { input: { title, image, authorId: auth.user.id } },
+        variables: { input: { title, image, authorId: auth.user._id } },
       });
       handleReset();
     } catch (error) {

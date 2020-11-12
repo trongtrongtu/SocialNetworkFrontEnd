@@ -29,12 +29,12 @@ const Like = ({ postId, user, likes, withText, fullWidth }) => {
   const [{ auth }] = useStore();
   const notification = useNotifications();
   // Detect which mutation to use
-  const hasLiked = likes.find((l) => l.user === auth.user.id && l.post === postId);
+  const hasLiked = likes.find((l) => l.user === auth.user._id && l.post === postId);
   const operation = hasLiked ? 'delete' : 'create';
   const options = {
     create: {
       mutation: CREATE_LIKE,
-      variables: { postId, userId: auth.user.id },
+      variables: { postId, userId: auth.user._id },
     },
     delete: {
       mutation: DELETE_LIKE,
@@ -44,8 +44,8 @@ const Like = ({ postId, user, likes, withText, fullWidth }) => {
   const [mutate] = useMutation(options[operation].mutation, {
     refetchQueries: [
       { query: GET_AUTH_USER },
-      { query: GET_POSTS, variables: { authUserId: auth.user.id } },
-      { query: GET_FOLLOWED_POSTS, variables: { userId: auth.user.id } },
+      { query: GET_POSTS, variables: { authUserId: auth.user._id } },
+      { query: GET_FOLLOWED_POSTS, variables: { userId: auth.user._id } },
     ],
   });
 
@@ -56,7 +56,7 @@ const Like = ({ postId, user, likes, withText, fullWidth }) => {
     });
 
     // Create or delete notification for like
-    if (auth.user.id === user.id) return setLoading(false);
+    if (auth.user._id === user.id) return setLoading(false);
     await notification.toggle({
       user,
       postId,

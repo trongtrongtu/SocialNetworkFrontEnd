@@ -40,7 +40,7 @@ const PeopleContainer = styled.div`
 const People = () => {
   const [{ auth }] = useStore();
   const variables = {
-    userId: auth.user.id,
+    userId: auth.user._id,
     skip: 0,
     limit: PEOPLE_PAGE_USERS_LIMIT,
   };

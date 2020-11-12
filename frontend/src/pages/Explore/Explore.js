@@ -45,7 +45,7 @@ const Explore = () => {
   const [{ auth }] = useStore();
   const [modalPostId, setModalPostId] = useState(null);
   const variables = {
-    authUserId: auth.user.id,
+    authUserId: auth.user._id,
     skip: 0,
     limit: EXPLORE_PAGE_POSTS_LIMIT,
   };

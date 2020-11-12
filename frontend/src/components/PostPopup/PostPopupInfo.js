@@ -59,7 +59,7 @@ const PostPopupInfo = ({ author }) => {
         </Spacing>
       </Author>
 
-      {auth.user.id !== author.id && <Follow user={author} />}
+      {auth.user._id !== author._id && <Follow user={author} />}
     </Root>
   );
 };

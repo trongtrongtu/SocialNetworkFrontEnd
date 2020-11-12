@@ -29,7 +29,7 @@ export const useNotifications = () => {
    */
   const create = ({ user, postId, notificationType, notificationTypeId }) => {
     return mutate(CREATE_NOTIFICATION, {
-      authorId: auth.user.id,
+      authorId: auth.user._id,
       userId: user.id,
       postId,
       notificationType,
@@ -54,7 +54,7 @@ export const useNotifications = () => {
       create: {
         mutation: CREATE_NOTIFICATION,
         variables: {
-          authorId: auth.user.id,
+          authorId: auth.user._id,
           userId: user.id,
           postId,
           notificationType,

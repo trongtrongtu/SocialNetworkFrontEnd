@@ -34,7 +34,7 @@ const List = styled.div`
 const Notifications = () => {
   const [{ auth }] = useStore();
   const variables = {
-    userId: auth.user.id,
+    userId: auth.user._id,
     skip: 0,
     limit: NOTIFICATIONS_PAGE_NOTIFICATION_LIMIT,
   };
