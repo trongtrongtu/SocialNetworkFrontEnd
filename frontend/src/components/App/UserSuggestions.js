@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import styled from 'styled-components';
 import { matchPath } from 'react-router';
@@ -17,6 +17,7 @@ import { USER_SUGGESTIONS } from 'graphql/user';
 import { USER_SUGGESTIONS_WIDTH, HEADER_HEIGHT } from 'constants/Layout';
 
 import * as Routes from 'routes';
+import { getListUsersSuggestions } from '../../networking/Server'
 
 const Root = styled.div`
   display: none;
@@ -73,6 +74,19 @@ const UserSuggestions = ({ pathname }) => {
     path: [Routes.MESSAGES, Routes.PEOPLE, Routes.EXPLORE, Routes.USER_PROFILE],
   });
 
+  const [dataArr, setDataArr] = useState([]);
+  const refreshDataFromServer = () => {
+    getListUsersSuggestions().then((data) => {
+      setDataArr(data)
+    }).catch((error) => {
+      console.error(error);
+    });
+  }
+
+  useEffect(() => {
+    refreshDataFromServer();
+  }, []);
+
   if (hideUserSuggestions) return null;
 
   if (loading) {
@@ -83,7 +97,7 @@ const UserSuggestions = ({ pathname }) => {
     );
   }
 
-  if (!data.suggestPeople.length > 0) {
+  if (!dataArr.suggestPeople.length > 0) {
     return null;
   }
 
@@ -92,8 +106,8 @@ const UserSuggestions = ({ pathname }) => {
       <H3>Suggestions For You</H3>
 
       <List>
-        {data.suggestPeople.map((user) => (
-          <ListItem key={user.id}>
+        {dataArr.suggestPeople.map((user) => (
+          <ListItem key={user._id}>
             <A
               to={generatePath(Routes.USER_PROFILE, {
                 username: user.username,

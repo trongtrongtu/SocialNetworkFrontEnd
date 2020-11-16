@@ -51,20 +51,20 @@ const Profile = ({ match }) => {
   }, []);
 
   const renderContent = () => {
-    if (loading) {
-      return (
-        <Container padding="xxs">
-          <Skeleton height={350} />
-          <Container maxWidth="sm">
-            <Spacing top="lg" bottom="lg">
-              <Skeleton height={82} />
-            </Spacing>
-          </Container>
-        </Container>
-      );
-    }
+    // if (loading) {
+    //   return (
+    //     <Container padding="xxs">
+    //       <Skeleton height={350} />
+    //       <Container maxWidth="sm">
+    //         <Spacing top="lg" bottom="lg">
+    //           <Skeleton height={82} />
+    //         </Spacing>
+    //       </Container>
+    //     </Container>
+    //   );
+    // }
 
-    if (error || !dataArr.getUser) return <NotFound />;
+    if (!dataArr.getUser) return <NotFound />;
 
     return (
       <Container padding="xxs">
@@ -72,10 +72,10 @@ const Profile = ({ match }) => {
 
         <Container maxWidth="sm">
           <Spacing top="lg" bottom="lg">
-            {username === auth.user.username && <CreatePost />}
+            {dataArr.getUser.username === auth.user.username && <CreatePost />}
           </Spacing>
 
-          <ProfilePosts username={username} />
+          <ProfilePosts username={dataArr.getUser.username} />
         </Container>
       </Container>
     );

@@ -30,6 +30,16 @@ async function getListNotification() {
   }
 }
 
+async function getListUsersSuggestions() {
+  try {
+    let response = await fetch(`${IpAddress}/list_all_users_suggestions`);
+    let responseJson = await response.json();
+    return responseJson.data;
+  } catch (error) {
+    console.error(`Error is : ${error}`);
+  }
+}
+
 async function getProfile(userId) {
   try {
     let response = await fetch(`${IpAddress}/profile?userId=${userId}`);
@@ -60,4 +70,4 @@ async function getListPostUser(userId) {
   }
 }
 
-export { getListPost, getListNotification, getProfile, getListPostUser, getPostDetail, getAuthUser };
+export { getListPost, getListNotification, getProfile, getListPostUser, getPostDetail, getAuthUser, getListUsersSuggestions };
