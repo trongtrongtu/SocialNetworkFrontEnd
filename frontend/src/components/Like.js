@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import styled from 'styled-components';
 import { useMutation } from '@apollo/client';
@@ -16,6 +16,8 @@ import { NotificationType } from 'constants/NotificationType';
 import { useNotifications } from 'hooks/useNotifications';
 
 import { useStore } from 'store';
+import { addLike } from '../networking/Server'
+
 
 const StyledButton = styled(Button)`
   padding: ${(p) => p.theme.spacing.xs} 0;
@@ -26,6 +28,7 @@ const StyledButton = styled(Button)`
  */
 const Like = ({ postId, user, likes, withText, fullWidth }) => {
   const [loading, setLoading] = useState(false);
+  const [dataArr, setDataArr] = useState(false);
   const [{ auth }] = useStore();
   const notification = useNotifications();
   // Detect which mutation to use
@@ -67,18 +70,25 @@ const Like = ({ postId, user, likes, withText, fullWidth }) => {
     setLoading(false);
   };
 
+
   return (
     <StyledButton
       fullWidth={fullWidth && fullWidth}
       disabled={loading}
       text
-      onClick={() => handleButtonClick(mutate)}
-      color={hasLiked && 'primary.main'}
+      onClick={() =>
+        addLike({ user: user._id, post: postId }).then((data) => {
+          setDataArr(!dataArr)
+        }).catch((error) => {
+          console.error(error);
+        })
+      }
+      color={dataArr && 'primary.main'}
     >
-      <LikeIcon color={hasLiked && 'primary.main'} />
+      <LikeIcon color={dataArr && 'primary.main'} />
       <Spacing inline left="xxs" />
-      {withText && <b>Like</b>}
-    </StyledButton>
+      { withText && <b>Like</b>}
+    </StyledButton >
   );
 };
 

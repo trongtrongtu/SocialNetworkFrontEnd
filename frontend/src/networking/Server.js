@@ -70,4 +70,38 @@ async function getListPostUser(userId) {
   }
 }
 
-export { getListPost, getListNotification, getProfile, getListPostUser, getPostDetail, getAuthUser, getListUsersSuggestions };
+async function addNewPosts(params) {
+  try {
+    let response = await fetch(`${IpAddress}/create_post`, {
+      method: 'POST',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(params)
+    });
+    let responseJson = await response.json();
+    return responseJson.result;
+  } catch (error) {
+    console.error(`Error is : ${error}`);
+  }
+}
+
+async function addLike(params) {
+  try {
+    let response = await fetch(`${IpAddress}/create_like`, {
+      method: 'POST',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(params)
+    });
+    let responseJson = await response.json();
+    return responseJson.result;
+  } catch (error) {
+    console.error(`Error is : ${error}`);
+  }
+}
+
+export { getListPost, getListNotification, getProfile, getListPostUser, getPostDetail, getAuthUser, getListUsersSuggestions, addNewPosts,addLike };

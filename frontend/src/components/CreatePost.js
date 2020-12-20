@@ -137,14 +137,15 @@ const CreatePost = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    try {
-      await createPost({
-        variables: { input: { title, image, authorId: auth.user._id } },
-      });
-      handleReset();
-    } catch (error) {
-      setApiError(true);
-    }
+    // try {
+    //   await createPost({
+    //     variables: { input: { title, image, authorId: auth.user._id } },
+    //   });
+    //   handleReset();
+    // } catch (error) {
+    //   setApiError(true);
+    // }
+    console.log('submit: ', { input: { title, image, authorId: auth.user._id } })
   };
 
   const isShareDisabled = loading || (!loading && !image && !title);

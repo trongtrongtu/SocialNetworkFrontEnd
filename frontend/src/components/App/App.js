@@ -36,7 +36,10 @@ const App = () => {
   }
 
   useEffect(() => {
-    refreshDataFromServer('5f91b839d2a91e3e08cb8451');
+    if (!localStorage.getItem('id')) {
+      localStorage.setItem('id', '5f91b839d2a91e3e08cb8451')
+    }
+    refreshDataFromServer(localStorage.getItem('id'));
   }, []);
 
   useEffect(() => {
@@ -136,7 +139,7 @@ const App = () => {
 
       <ScrollToTop>
         <Switch>
-          {dataArr.getAuthUser ? (
+          {localStorage.getItem('id') ? (
             <Route exact render={() => <AppLayout authUser={dataArr.getAuthUser} />} />
           ) : (
               <Route exact render={() => <AuthLayout refetch={refetch} />} />
