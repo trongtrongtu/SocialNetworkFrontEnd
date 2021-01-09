@@ -12,6 +12,8 @@ import { InputText, Button } from 'components/Form';
 import { SIGN_IN } from 'graphql/user';
 
 import * as Routes from 'routes';
+import { login } from '../../networking/Server'
+
 
 const Root = styled.div`
   display: flex;
@@ -39,11 +41,10 @@ const ForgotPassword = styled.div`
 /**
  * Sign In page
  */
-const SignIn = ({ history, location, refetch }) => {
+const SignIn = ({ history, location, refetch, onChange }) => {
   const [values, setValues] = useState({ emailOrUsername: '', password: '' });
   const [error, setError] = useState('');
   const [signin, { loading }] = useMutation(SIGN_IN);
-
   useEffect(() => {
     setError('');
   }, [location.pathname]);
@@ -55,23 +56,38 @@ const SignIn = ({ history, location, refetch }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
     if (!emailOrUsername || !password) {
       setError('All fields are required');
       return;
-    }
-
-    setError('');
-    try {
-      const response = await signin({
-        variables: { input: { emailOrUsername, password } },
+    } else {
+      login(emailOrUsername, password).then((data) => {
+        if (data.result === 'ok') {
+          localStorage.setItem('id', data && data.data && data.data._id);
+          onChange();
+          history.push(Routes.HOME);
+        } else if (data.result === 'failed_login') {
+          setError('Login failed');
+        }
+      }).catch((error) => {
+        console.error(error);
       });
-      localStorage.setItem('token', response.data.signin.token);
-      await refetch();
-      history.push(Routes.HOME);
-    } catch (error) {
-      setError(error.graphQLErrors[0].message);
     }
+    // if (!emailOrUsername || !password) {
+    //   setError('All fields are required');
+    //   return;
+    // }
+
+    // setError('');
+    // try {
+    //   const response = await signin({
+    //     variables: { input: { emailOrUsername, password } },
+    //   });
+    //   localStorage.setItem('token', response.data.signin.token);
+    //   await refetch();
+    //   history.push(Routes.HOME);
+    // } catch (error) {
+    //   setError(error.graphQLErrors[0].message);
+    // }
   };
 
   const { emailOrUsername, password } = values;
@@ -94,7 +110,7 @@ const SignIn = ({ history, location, refetch }) => {
             name="emailOrUsername"
             values={emailOrUsername}
             onChange={handleChange}
-            placeholder="Email or Username"
+            placeholder="Username"
             borderColor="white"
           />
         </InputContainer>

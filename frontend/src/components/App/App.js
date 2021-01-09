@@ -34,12 +34,19 @@ const App = () => {
       console.error(error);
     });
   }
+  const onChange = () => {
+    if (localStorage.getItem('id')) {
+      refreshDataFromServer(localStorage.getItem('id'));
+    }
+  }
 
   useEffect(() => {
-    if (!localStorage.getItem('id')) {
-      localStorage.setItem('id', '5f91b839d2a91e3e08cb8451')
+    // if (!localStorage.getItem('id')) {
+    //   localStorage.setItem('id', '5f91b839d2a91e3e08cb8451')
+    // }
+    if (localStorage.getItem('id')) {
+      refreshDataFromServer(localStorage.getItem('id'));
     }
-    refreshDataFromServer(localStorage.getItem('id'));
   }, []);
 
   useEffect(() => {
@@ -122,7 +129,7 @@ const App = () => {
     };
   }, [subscribeToMore]);
 
-  if (loading) return <Loading top="xl" />;
+  // if (loading) return <Loading top="xl" />;
   if (error) {
     const isDevelopment = !process.env.NODE_ENV || process.env.NODE_ENV === 'development';
     if (isDevelopment) {
@@ -142,7 +149,7 @@ const App = () => {
           {localStorage.getItem('id') ? (
             <Route exact render={() => <AppLayout authUser={dataArr.getAuthUser} />} />
           ) : (
-              <Route exact render={() => <AuthLayout refetch={refetch} />} />
+              <Route exact render={() => <AuthLayout refetch={refetch} onChange={onChange} />} />
             )}
         </Switch>
       </ScrollToTop>

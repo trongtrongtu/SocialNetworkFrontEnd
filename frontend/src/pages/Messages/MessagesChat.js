@@ -31,7 +31,7 @@ const MessagesChat = ({ match, authUser }) => {
   });
 
   const { subscribeToMore, data: messages, loading: messagesLoading } = useQuery(GET_MESSAGES, {
-    variables: { authUserId: authUser.id, userId },
+    variables: { authUserId: authUser._id, userId },
     skip: userId === Routes.NEW_ID_VALUE,
     fetchPolicy: 'network-only',
   });
@@ -42,25 +42,25 @@ const MessagesChat = ({ match, authUser }) => {
         mutation: UPDATE_MESSAGE_SEEN,
         variables: {
           input: {
-            receiver: authUser.id,
+            receiver: authUser._id,
             sender: userId,
           },
         },
         refetchQueries: () => [
           {
             query: GET_CONVERSATIONS,
-            variables: { authUserId: authUser.id },
+            variables: { authUserId: authUser._id },
           },
           { query: GET_AUTH_USER },
         ],
       });
-    } catch (err) {}
-  }, [authUser.id, client, userId]);
+    } catch (err) { }
+  }, [authUser._id, client, userId]);
 
   useEffect(() => {
     const unsubscribe = subscribeToMore({
       document: GET_MESSAGES_SUBSCRIPTION,
-      variables: { authUserId: authUser.id, userId },
+      variables: { authUserId: authUser._id, userId },
       updateQuery: (prev, { subscriptionData }) => {
         if (!subscriptionData.data) return prev;
 
@@ -76,7 +76,7 @@ const MessagesChat = ({ match, authUser }) => {
     return () => {
       unsubscribe();
     };
-  }, [authUser.id, userId, subscribeToMore, updateMessageSeen]);
+  }, [authUser._id, userId, subscribeToMore, updateMessageSeen]);
 
   useEffect(() => {
     if (userId !== Routes.NEW_ID_VALUE) {
@@ -84,13 +84,13 @@ const MessagesChat = ({ match, authUser }) => {
     }
   }, [userId, updateMessageSeen]);
 
-  if (loading || messagesLoading) {
-    return (
-      <Root>
-        <LoadingDots />
-      </Root>
-    );
-  }
+  // if (loading || messagesLoading) {
+  //   return (
+  //     <Root>
+  //       <LoadingDots />
+  //     </Root>
+  //   );
+  // }
 
   let chatUser = null;
   if (data && data.getUser) {

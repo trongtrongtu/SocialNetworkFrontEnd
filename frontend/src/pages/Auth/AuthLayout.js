@@ -41,13 +41,13 @@ const Pages = styled.div`
 /**
  * Main Layout for the app, when user isn't authenticated
  */
-const AuthLayout = ({ refetch }) => {
+const AuthLayout = ({ refetch, onChange }) => {
   return (
     <Root>
       <Overlay transparency="0.5" />
 
       <Container>
-        <AuthHeader refetch={refetch} />
+        <AuthHeader refetch={refetch} onChange={onChange} />
 
         <Pages>
           <Switch>

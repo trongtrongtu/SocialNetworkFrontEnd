@@ -14,6 +14,11 @@ import { GET_CONVERSATIONS } from 'graphql/user';
 import { currentDate } from 'utils/date';
 
 import * as Routes from 'routes';
+import io from 'socket.io-client';
+import { getMessage } from '../../networking/Server'
+
+
+const socket = io('localhost:3001');
 
 const Root = styled.div`
   padding: 0 ${(p) => p.theme.spacing.sm};
@@ -106,12 +111,14 @@ const SendButton = styled(Button)`
 /**
  * Component that renders messages conversations UI
  */
+let dataArr = []
 const MessagesChatConversation = ({ messages, authUser, chatUser, data, match }) => {
   const bottomRef = useRef(null);
 
   const [messageText, setMessageText] = useState('');
 
   const [createMessage] = useMutation(CREATE_MESSAGE);
+  const [dataArr1, setDataArr] = useState([]);
 
   useEffect(() => {
     if (bottomRef.current) {
@@ -119,31 +126,51 @@ const MessagesChatConversation = ({ messages, authUser, chatUser, data, match })
     }
   }, [bottomRef, data]);
 
+  useEffect(() => {
+    socket.on("newMessageFriend", dataMes => {
+      // console.log('dataArr: ', dataArr)
+      dataArr = [...dataArr, dataMes]
+      setDataArr(dataMes)
+    }); //gửi event về server
+  }, []);
+  const refreshDataFromServer = () => {
+    getMessage().then((data) => {
+      if (data && data.length > 0) {
+        dataArr = [...data]
+        setDataArr(data)
+      }
+    }).catch((error) => {
+      console.error(error);
+    });
+  }
+
+  useEffect(() => {
+    refreshDataFromServer();
+  }, []);
   const sendMessage = (e) => {
     e.preventDefault();
-
-    if (!messageText) return;
-
+    if (!(messageText && messageText.trim())) return;
+    socket.emit("newMessageFriend", { data: messageText && messageText.trim(), user: authUser._id, usernamefriend: match.params && match.params.userId, time: new Date().toLocaleString(), image: authUser.image }); //gửi event về server
     setMessageText('');
-    createMessage({
-      variables: {
-        input: {
-          sender: authUser.id,
-          receiver: chatUser ? chatUser.id : null,
-          message: messageText,
-        },
-      },
-      refetchQueries: ({ data }) => {
-        if (data && data.createMessage && data.createMessage.isFirstMessage) {
-          return [
-            {
-              query: GET_CONVERSATIONS,
-              variables: { authUserId: authUser.id },
-            },
-          ];
-        }
-      },
-    });
+    // createMessage({
+    //   variables: {
+    //     input: {
+    //       sender: authUser.id,
+    //       receiver: chatUser ? chatUser.id : null,
+    //       message: messageText,
+    //     },
+    //   },
+    //   refetchQueries: ({ data }) => {
+    //     if (data && data.createMessage && data.createMessage.isFirstMessage) {
+    //       return [
+    //         {
+    //           query: GET_CONVERSATIONS,
+    //           variables: { authUserId: authUser.id },
+    //         },
+    //       ];
+    //     }
+    //   },
+    // });
   };
 
   const onEnterPress = (e) => {
@@ -151,31 +178,32 @@ const MessagesChatConversation = ({ messages, authUser, chatUser, data, match })
       sendMessage(e);
     }
   };
-
+  // console.log('aaaaa: ', { messages, authUser, chatUser, data, match, dataArr })
   return (
     <Root>
       <Conversation>
-        {messages.map((message) => {
-          const isAuthUserReceiver = authUser.id === message.sender.id;
+        {dataArr && dataArr.length > 0 && dataArr.map((message) => {
+          if ((match.params && match.params.userId) === message.user || (match.params && match.params.userId) === message.usernamefriend) {
+            const isAuthUserReceiver = authUser._id === message.user;
+            return (
+              <MessageWrapper userMessage={isAuthUserReceiver} key={message.key}>
+                {!isAuthUserReceiver && (
+                  <Spacing right="xs">
+                    <Avatar image={message.image} />
+                  </Spacing>
+                )}
 
-          return (
-            <MessageWrapper userMessage={isAuthUserReceiver} key={message.id}>
-              {!isAuthUserReceiver && (
-                <Spacing right="xs">
-                  <Avatar image={message.sender.image} />
-                </Spacing>
-              )}
+                <Message userMessage={isAuthUserReceiver}>{message.data}</Message>
 
-              <Message userMessage={isAuthUserReceiver}>{message.message}</Message>
-
-              <MessageDate userMessage={isAuthUserReceiver}>{currentDate(message.createdAt)}</MessageDate>
-            </MessageWrapper>
-          );
+                <MessageDate userMessage={isAuthUserReceiver}>{message.time}</MessageDate>
+              </MessageWrapper>
+            );
+          }
         })}
         <div ref={bottomRef} />
       </Conversation>
 
-      {match.params.userId !== Routes.NEW_ID_VALUE && chatUser && (
+      {match.params.userId !== Routes.NEW_ID_VALUE && (
         <Form onSubmit={sendMessage}>
           <StyledTextarea
             placeholder="Type a message"

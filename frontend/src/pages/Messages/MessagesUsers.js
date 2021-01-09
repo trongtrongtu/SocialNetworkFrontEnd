@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import styled from 'styled-components';
 import { NavLink, generatePath, withRouter } from 'react-router-dom';
@@ -13,6 +13,7 @@ import { LoadingDots } from 'components/Loading';
 import Avatar from 'components/Avatar';
 
 import * as Routes from 'routes';
+import { getListUsersSuggestions } from '../../networking/Server'
 
 const Root = styled.div`
   width: 80px;
@@ -87,8 +88,8 @@ const User = styled(NavLink)`
 
   @media (max-width: ${(p) => p.theme.screen.lg}) {
     ${(p) =>
-      !p.seen &&
-      `
+    !p.seen &&
+    `
         background-color: ${p.theme.colors.primary.light};
       `};
   }
@@ -171,6 +172,19 @@ const MessagesUsers = ({ location, authUser }) => {
     };
   }, [subscribeToMore]);
 
+  const [dataArr, setDataArr] = useState([]);
+  const refreshDataFromServer = () => {
+    getListUsersSuggestions().then((data) => {
+      setDataArr(data)
+    }).catch((error) => {
+      console.error(error);
+    });
+  }
+
+  useEffect(() => {
+    refreshDataFromServer();
+  }, []);
+  // console.log('dataArr: ', { dataArr, authUser })
   return (
     <Root>
       <HeadingContainer>
@@ -191,30 +205,31 @@ const MessagesUsers = ({ location, authUser }) => {
 
       {loading && <LoadingDots top="xl" />}
 
-      {!loading && (
+      {!loading && dataArr && dataArr.suggestPeople && (
         <UserContainer>
-          {data.getConversations.map((user) => {
+          {dataArr.suggestPeople.map((user) => {
             const unseen = !user.lastMessageSender && !user.seen;
+            if (user._id !== authUser._id) {
+              return (
+                <User key={user._id} activeClassName="selected" to={`/messages/${user._id}`} seen={unseen ? 0 : 1}>
+                  <span>
+                    <Avatar image={user.image} size={50} />
+                  </span>
 
-            return (
-              <User key={user.id} activeClassName="selected" to={`/messages/${user.id}`} seen={unseen ? 0 : 1}>
-                <span>
-                  <Avatar image={user.image} size={50} />
-                </span>
+                  <Info>
+                    <FullNameUnSeen>
+                      <FullName>{user.fullName}</FullName>
 
-                <Info>
-                  <FullNameUnSeen>
-                    <FullName>{user.fullName}</FullName>
+                      {unseen && <UnSeen />}
+                    </FullNameUnSeen>
 
-                    {unseen && <UnSeen />}
-                  </FullNameUnSeen>
-
-                  <LastMessage>
-                    {user.lastMessageSender && 'You:'} {user.lastMessage}
-                  </LastMessage>
-                </Info>
-              </User>
-            );
+                    <LastMessage>
+                      {user.lastMessageSender && 'You:'} {user.lastMessage}
+                    </LastMessage>
+                  </Info>
+                </User>
+              );
+            }
           })}
         </UserContainer>
       )}

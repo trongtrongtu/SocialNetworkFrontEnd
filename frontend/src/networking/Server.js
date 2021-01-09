@@ -103,5 +103,27 @@ async function addLike(params) {
     console.error(`Error is : ${error}`);
   }
 }
+async function login(user_name, pass_word) {
+  try {
+    if (!user_name || !pass_word) {
+      return 'empty';
+    } else {
+      let response = await fetch(`${IpAddress}/login?username=${user_name}&password=${pass_word}`);
+      let responseJson = await response.json();
+      return responseJson;
+    }
+  } catch (error) {
+    console.error(`Error is : ${error}`);
+  }
+}
+async function getMessage() {
+  try {
+    let response = await fetch(`${IpAddress}/messageUser`);
+    let responseJson = await response.json();
+    return responseJson.data;
+  } catch (error) {
+    console.error(`Error is : ${error}`);
+  }
+}
 
-export { getListPost, getListNotification, getProfile, getListPostUser, getPostDetail, getAuthUser, getListUsersSuggestions, addNewPosts,addLike };
+export { getListPost, getListNotification, getProfile, getListPostUser, getPostDetail, getAuthUser, getListUsersSuggestions, addNewPosts, addLike, login, getMessage };

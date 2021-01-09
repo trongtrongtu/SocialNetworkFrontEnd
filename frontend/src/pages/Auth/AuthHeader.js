@@ -57,14 +57,14 @@ const SignInContainer = styled.div`
 /**
  * Header of the App when user isn't authenticated
  */
-const AuthHeader = ({ refetch }) => {
+const AuthHeader = ({ refetch, onChange }) => {
   return (
     <Root>
       <StyledContainer maxWidth="lg">
         <Logo to={Routes.HOME}>{SiteInfo.name}</Logo>
 
         <SignInContainer>
-          <SignIn refetch={refetch} />
+          <SignIn refetch={refetch} onChange={onChange} />
         </SignInContainer>
       </StyledContainer>
     </Root>
