@@ -25,7 +25,7 @@ const Form = styled.form`
 /**
  * Creates a comment for a post
  */
-const CreateComment = ({ post, focus }) => {
+const CreateComment = ({ post, focus, onChangeCommentCount }) => {
   const [{ auth }] = useStore();
   const notification = useNotifications();
   const [comment, setComment] = useState('');
@@ -47,20 +47,21 @@ const CreateComment = ({ post, focus }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const { data } = await createComment({
-      variables: { input: { comment, author: auth.user._id, postId: post.id } },
-    });
+    // const { data } = await createComment({
+    //   variables: { input: { comment, author: auth.user._id, postId: post.id } },
+    // });
+    onChangeCommentCount({ comment, author: auth.user, postId: post.id })
     setComment('');
 
     // Create notification on comment
-    if (auth.user._id !== post.author._id) {
-      notification.create({
-        user: post.author,
-        postId: post.id,
-        notificationType: NotificationType.COMMENT,
-        notificationTypeId: data.createComment.id,
-      });
-    }
+    // if (auth.user._id !== post.author._id) {
+    //   notification.create({
+    //     user: post.author,
+    //     postId: post.id,
+    //     notificationType: NotificationType.COMMENT,
+    //     notificationTypeId: data.createComment.id,
+    //   });
+    // }
   };
 
   const onEnterPress = (e) => {

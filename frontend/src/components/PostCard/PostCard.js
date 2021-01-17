@@ -116,11 +116,16 @@ const CommentLine = styled.div`
 /**
  * Component for rendering user post
  */
-const PostCard = ({ author, imagePublicId, comments, title, createdAt, image, likes, postId, openModal }) => {
+let likeCount = 0;
+let commentCount = 0;
+const PostCard = ({ author, imagePublicId, comments, title, time, image, likes, postId, openModal }) => {
   const [{ auth }] = useStore();
   const client = useApolloClient();
   const [isCommentOpen, setIsCommentOpen] = useState(false);
   const [isOptionOpen, setIsOptionOpen] = useState(false);
+  const [likeCount, setLikeCount] = useState(false);
+  const [commentCount, setCommentCount] = useState(0);
+  const [dataComment, setDataComment] = useState(comments);
 
   const toggleCreateComment = () => {
     setIsCommentOpen(true);
@@ -163,7 +168,14 @@ const PostCard = ({ author, imagePublicId, comments, title, createdAt, image, li
 
     setIsOptionOpen(false);
   };
+  const onChangeLikeCount = () => {
+    setLikeCount(!likeCount)
+  }
 
+  const onChangeCommentCount = (data) => {
+    setCommentCount(commentCount + 1)
+    setDataComment([...dataComment, { author: data.author, comment: data.comment, post: data.postId, _id: Math.random() }])
+  }
   return (
     <>
       <Root>
@@ -181,7 +193,7 @@ const PostCard = ({ author, imagePublicId, comments, title, createdAt, image, li
 
             <Spacing left="xs">
               <Name>{author.fullName}</Name>
-              <CreatedAt>{timeAgo(createdAt)}</CreatedAt>
+              <CreatedAt>{time}</CreatedAt>
             </Spacing>
           </Author>
 
@@ -194,20 +206,20 @@ const PostCard = ({ author, imagePublicId, comments, title, createdAt, image, li
           <H3>{title}</H3>
         </Spacing>
 
-        {image && <Poster src={image} onClick={openModal} />}
+        {image && <Poster src={image} onClick={() => openModal(postId, dataComment, likeCount)} />}
 
         <BottomRow>
           <CountAndIcons>
             <Count>
-              {likes.length} likes
+              {likes.length + (likeCount ? 1 : 0)} likes
               <Spacing />
               <StyledButton onClick={toggleComment} text>
-                {comments.length} comments
+                {dataComment.length} comments
               </StyledButton>
             </Count>
 
             <Icons>
-              <Like fullWidth withText user={author} postId={postId} likes={likes} />
+              <Like fullWidth withText user={author} postId={postId} likes={likes} onChangeLikeCount={onChangeLikeCount} />
 
               <Button fullWidth text onClick={toggleCreateComment}>
                 <PostCommentIcon /> <Spacing inline left="xxs" /> <b>Comment</b>
@@ -219,13 +231,13 @@ const PostCard = ({ author, imagePublicId, comments, title, createdAt, image, li
             <>
               <Spacing top="xs">
                 <CommentLine />
-                <CreateComment post={{ id: postId, author }} focus={isCommentOpen} />
+                <CreateComment post={{ id: postId, author }} onChangeCommentCount={onChangeCommentCount} focus={isCommentOpen} />
               </Spacing>
 
-              {comments.length > 0 && <CommentLine />}
+              {dataComment.length > 0 && <CommentLine />}
 
               <Comments>
-                {comments.map((comment) => (
+                {dataComment.map((comment) => (
                   <Comment key={comment._id} comment={comment} postId={postId} postAuthor={author} />
                 ))}
               </Comments>

@@ -52,64 +52,68 @@ const ProfilePosts = ({ username }) => {
   }
 
   useEffect(() => {
-    refreshDataFromServer('5f91b839d2a91e3e08cb8451')
+    refreshDataFromServer(localStorage.getItem('id'))
   }, []);
 
-  if (loading && networkStatus === 1) {
+  // if (loading && networkStatus === 1) {
+  //   return <Skeleton height={500} bottom="lg" top="lg" count={PROFILE_PAGE_POSTS_LIMIT} />;
+  // }
+  if (dataArr && dataArr.getUserPosts) {
+    const { posts, count } = dataArr.getUserPosts;
+    if (!(posts && posts.length) > 0) {
+      return (
+        <Spacing bottom="lg">
+          <Empty text="No posts yet." />
+        </Spacing>
+      );
+    }
+
+    return (
+      <InfiniteScroll
+        data={posts}
+        dataKey="getUserPosts.posts"
+        count={parseInt(count)}
+        variables={variables}
+        fetchMore={fetchMore}
+      >
+        {(data) => {
+          return data.map((post, i) => {
+            const showNextLoading = loading && networkStatus === 3 && data.length - 1 === i;
+
+            return (
+              <Fragment key={post._id}>
+                {modalPostId === post._id && (
+                  <Modal open={isPostPopupOpen} onClose={closeModal}>
+                    <PostPopup id={post._id} closeModal={closeModal} />
+                  </Modal>
+                )}
+
+                <Spacing bottom="lg">
+                  <PostCard
+                    author={post.author}
+                    postId={post._id}
+                    imagePublicId={post.imagePublicId}
+                    comments={post.comments}
+                    title={post.title}
+                    time={post.time}
+                    image={`http://localhost:3001/open_image?image_name=${post.image}`}
+                    likes={post.likes}
+                    createdAt={post.createdAt}
+                    openModal={() => openModal(post._id)}
+                  />
+                </Spacing>
+
+                {showNextLoading && <Loading top="lg" />}
+              </Fragment>
+            );
+          });
+        }}
+      </InfiniteScroll>
+    );
+  } else {
     return <Skeleton height={500} bottom="lg" top="lg" count={PROFILE_PAGE_POSTS_LIMIT} />;
   }
-
-  const { posts, count } = dataArr.getUserPosts;
-  if (!posts.length > 0) {
-    return (
-      <Spacing bottom="lg">
-        <Empty text="No posts yet." />
-      </Spacing>
-    );
-  }
-
-  return (
-    <InfiniteScroll
-      data={posts}
-      dataKey="getUserPosts.posts"
-      count={parseInt(count)}
-      variables={variables}
-      fetchMore={fetchMore}
-    >
-      {(data) => {
-        return data.map((post, i) => {
-          const showNextLoading = loading && networkStatus === 3 && data.length - 1 === i;
-
-          return (
-            <Fragment key={post._id}>
-              {modalPostId === post._id && (
-                <Modal open={isPostPopupOpen} onClose={closeModal}>
-                  <PostPopup id={post._id} closeModal={closeModal} />
-                </Modal>
-              )}
-
-              <Spacing bottom="lg">
-                <PostCard
-                  author={post.author}
-                  postId={post._id}
-                  imagePublicId={post.imagePublicId}
-                  comments={post.comments}
-                  title={post.title}
-                  image={post.image}
-                  likes={post.likes}
-                  createdAt={post.createdAt}
-                  openModal={() => openModal(post._id)}
-                />
-              </Spacing>
-
-              {showNextLoading && <Loading top="lg" />}
-            </Fragment>
-          );
-        });
-      }}
-    </InfiniteScroll>
-  );
-};
+}
 
 ProfilePosts.propTypes = {
   username: PropTypes.string.isRequired,

@@ -27,16 +27,16 @@ const Count = styled.div`
 /**
  * Options for PostPopup component
  */
-const PostPopupOptions = ({ postId, postAuthor, postLikes }) => {
+const PostPopupOptions = ({ postId, postAuthor, postLikes, isLike }) => {
   return (
     <Root>
       <Icons>
-        <Like postId={postId} user={postAuthor} likes={postLikes} />
+        <Like postId={postId} user={postAuthor} likes={postLikes} isLike={isLike} />
         <Spacing right="sm" />
         <PostCommentIcon />
       </Icons>
 
-      <Count>{postLikes.length} likes</Count>
+      <Count>{postLikes.length + (isLike ? 1 : 0)} likes</Count>
     </Root>
   );
 };

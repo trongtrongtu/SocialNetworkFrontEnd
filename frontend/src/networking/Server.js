@@ -125,5 +125,34 @@ async function getMessage() {
     console.error(`Error is : ${error}`);
   }
 }
+async function signUp(params) {
+  try {
+    let response = await fetch(`${IpAddress}/sign_up`, {
+      method: 'POST',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(params)
+    });
+    let responseJson = await response.json();
+    return responseJson;
+  } catch (error) {
+    console.error(`Error is : ${error}`);
+  }
+}
 
-export { getListPost, getListNotification, getProfile, getListPostUser, getPostDetail, getAuthUser, getListUsersSuggestions, addNewPosts, addLike, login, getMessage };
+export {
+  getListPost,
+  getListNotification,
+  getProfile,
+  getListPostUser,
+  getPostDetail,
+  getAuthUser,
+  getListUsersSuggestions,
+  addNewPosts,
+  addLike,
+  login,
+  getMessage,
+  signUp
+};

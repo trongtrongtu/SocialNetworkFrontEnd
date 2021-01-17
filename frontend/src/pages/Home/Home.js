@@ -51,6 +51,8 @@ const Home = () => {
     notifyOnNetworkStatusChange: true,
   });
   const [dataArr, setDataArr] = useState([]);
+  const [dataComment, setDataComment] = useState([]);
+  const [isLike, setIsLike] = useState(false);
   const refreshDataFromServer = () => {
     getListPost().then((data) => {
       setDataArr(data)
@@ -68,69 +70,71 @@ const Home = () => {
     setModalPostId(null);
   };
 
-  const openModal = (postId) => {
+  const openModal = (postId, dataComment, likeCount) => {
     window.history.pushState('', '', generatePath(Routes.POST, { id: postId }));
+    setDataComment(dataComment)
+    setIsLike(likeCount)
     setModalPostId(postId);
   };
 
   const renderContent = () => {
-    if (loading && networkStatus === 1) {
-      return <Skeleton height={500} bottom="lg" top="lg" count={HOME_PAGE_POSTS_LIMIT} />;
-    }
+    // if (loading && networkStatus === 1) {
+    //   return <Skeleton height={500} bottom="lg" top="lg" count={HOME_PAGE_POSTS_LIMIT} />;
+    // }
+    if (dataArr && dataArr.getFollowedPosts) {
+      const { posts, count } = dataArr.getFollowedPosts;
 
-    const { posts, count } = dataArr.getFollowedPosts;
+      if (!(posts && posts.length)) {
+        return (
+          <Empty>
+            <StyledA to={generatePath(Routes.EXPLORE)}>Explore new posts</StyledA> or{' '}
+            <StyledA to={generatePath(Routes.PEOPLE)}>Find new people</StyledA>
+          </Empty>
+        );
+      }
 
-    if (!posts.length) {
       return (
-        <Empty>
-          <StyledA to={generatePath(Routes.EXPLORE)}>Explore new posts</StyledA> or{' '}
-          <StyledA to={generatePath(Routes.PEOPLE)}>Find new people</StyledA>
-        </Empty>
+        <InfiniteScroll
+          data={posts}
+          dataKey="getFollowedPosts.posts"
+          count={parseInt(count)}
+          variables={variables}
+          fetchMore={fetchMore}
+        >
+          {(data) => {
+            const showNextLoading = loading && networkStatus === 3 && count !== data.length;
+            return (
+              <Fragment>
+                {data.map((post) => (
+                  <Fragment key={post._id}>
+                    <Modal open={modalPostId === post._id} onClose={closeModal}>
+                      <PostPopup id={post._id} closeModal={closeModal} dataComment={dataComment} isLike={isLike} />
+                    </Modal>
+
+                    <Spacing bottom="lg" top="lg">
+                      <PostCard
+                        author={post.author}
+                        imagePublicId={post.imagePublicId}
+                        postId={post._id}
+                        comments={post.comments}
+                        time={post.time}
+                        title={post.title}
+                        image={post.image}
+                        likes={post.likes}
+                        openModal={openModal}
+                      />
+                    </Spacing>
+                  </Fragment>
+                ))}
+
+                {showNextLoading && <Loading top="lg" />}
+              </Fragment>
+            );
+          }}
+        </InfiniteScroll>
       );
-    }
-
-    return (
-      <InfiniteScroll
-        data={posts}
-        dataKey="getFollowedPosts.posts"
-        count={parseInt(count)}
-        variables={variables}
-        fetchMore={fetchMore}
-      >
-        {(data) => {
-          const showNextLoading = loading && networkStatus === 3 && count !== data.length;
-          return (
-            <Fragment>
-              {data.map((post) => (
-                <Fragment key={post._id}>
-                  <Modal open={modalPostId === post._id} onClose={closeModal}>
-                    <PostPopup id={post._id} closeModal={closeModal} />
-                  </Modal>
-
-                  <Spacing bottom="lg" top="lg">
-                    <PostCard
-                      author={post.author}
-                      imagePublicId={post.imagePublicId}
-                      postId={post._id}
-                      comments={post.comments}
-                      createdAt={post.createdAt}
-                      title={post.title}
-                      image={post.image}
-                      likes={post.likes}
-                      openModal={() => openModal(post._id)}
-                    />
-                  </Spacing>
-                </Fragment>
-              ))}
-
-              {showNextLoading && <Loading top="lg" />}
-            </Fragment>
-          );
-        }}
-      </InfiniteScroll>
-    );
-  };
-
+    };
+  }
   return (
     <Container maxWidth="sm">
       <Head />

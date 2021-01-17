@@ -47,7 +47,7 @@ const Profile = ({ match }) => {
   }
 
   useEffect(() => {
-    refreshDataFromServer('5f91b839d2a91e3e08cb8451')
+    refreshDataFromServer(localStorage.getItem('id'))
   }, []);
 
   const renderContent = () => {
@@ -64,7 +64,17 @@ const Profile = ({ match }) => {
     //   );
     // }
 
-    if (!dataArr.getUser) return <NotFound />;
+    if (!dataArr.getUser)
+      return (
+        <Container padding="xxs">
+          <Skeleton height={350} />
+          <Container maxWidth="sm">
+            <Spacing top="lg" bottom="lg">
+              <Skeleton height={82} />
+            </Spacing>
+          </Container>
+        </Container>
+      );
 
     return (
       <Container padding="xxs">

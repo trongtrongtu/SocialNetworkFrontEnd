@@ -26,7 +26,7 @@ const StyledButton = styled(Button)`
 /**
  * Component for rendering Like button
  */
-const Like = ({ postId, user, likes, withText, fullWidth }) => {
+const Like = ({ postId, user, likes, withText, fullWidth, onChangeLikeCount, isLike }) => {
   const [loading, setLoading] = useState(false);
   const [dataArr, setDataArr] = useState(false);
   const [{ auth }] = useStore();
@@ -78,6 +78,7 @@ const Like = ({ postId, user, likes, withText, fullWidth }) => {
       text
       onClick={() =>
         addLike({ user: user._id, post: postId }).then((data) => {
+          onChangeLikeCount();
           setDataArr(!dataArr)
         }).catch((error) => {
           console.error(error);
@@ -85,7 +86,7 @@ const Like = ({ postId, user, likes, withText, fullWidth }) => {
       }
       color={dataArr && 'primary.main'}
     >
-      <LikeIcon color={dataArr && 'primary.main'} />
+      <LikeIcon color={(dataArr || isLike) && 'primary.main'} />
       <Spacing inline left="xxs" />
       { withText && <b>Like</b>}
     </StyledButton >

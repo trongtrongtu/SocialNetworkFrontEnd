@@ -100,7 +100,7 @@ const Title = styled.div`
  * Displays post with comments and options
  * Meant to be used in Modal or Page component
  */
-const PostPopup = ({ id, closeModal, usedInModal }) => {
+const PostPopup = ({ id, closeModal, usedInModal, dataComment, isLike }) => {
   const { data, loading, error } = useQuery(GET_POST, {
     variables: { id },
   });
@@ -118,49 +118,53 @@ const PostPopup = ({ id, closeModal, usedInModal }) => {
     refreshDataFromServer(id);
   }, [id]);
 
-  if (loading) return <Loading top="lg" />;
-  if (error) return <NotFound />;
+  // if (loading) return <Loading top="lg" />;
+  // if (error) return <NotFound />;
+  if (dataArr && dataArr.getPost) {
+    const post = dataArr.getPost;
+    return (
+      <Root usedInModal={usedInModal}>
+        <Head title={post.title ? post.title : `${post.author.username}'s post`} />
 
-  const post = dataArr.getPost;
+        {closeModal && (
+          <CloseModal onClick={closeModal}>
+            <CloseIcon width="16" color="white" />
+          </CloseModal>
+        )}
 
-  return (
-    <Root usedInModal={usedInModal}>
-      <Head title={post.title ? post.title : `${post.author.username}'s post`} />
+        <Container usedInModal={usedInModal}>
+          <Left usedInModal={usedInModal}>
+            <Image src={post.image} usedInModal={usedInModal} />
+          </Left>
 
-      {closeModal && (
-        <CloseModal onClick={closeModal}>
-          <CloseIcon width="16" color="white" />
-        </CloseModal>
-      )}
+          <Right usedInModal={usedInModal}>
+            <Spacing>
+              <PostPopupInfo author={post.author} />
 
-      <Container usedInModal={usedInModal}>
-        <Left usedInModal={usedInModal}>
-          <Image src={post.image} usedInModal={usedInModal} />
-        </Left>
+              {post.title && <Title>{post.title}</Title>}
 
-        <Right usedInModal={usedInModal}>
-          <Spacing>
-            <PostPopupInfo author={post.author} />
+              <PostPopupComments
+                usedInModal={usedInModal}
+                dataComment={dataComment}
+                postId={post._id}
+                postAuthor={post.author}
+              />
+            </Spacing>
 
-            {post.title && <Title>{post.title}</Title>}
+            <Spacing>
+              <PostPopupOptions postId={post._id} postAuthor={post.author} postLikes={post.likes} isLike={isLike} />
 
-            <PostPopupComments
-              usedInModal={usedInModal}
-              comments={post.comments}
-              postId={post._id}
-              postAuthor={post.author}
-            />
-          </Spacing>
-
-          <Spacing>
-            <PostPopupOptions postId={post._id} postAuthor={post.author} postLikes={post.likes} />
-
-            <CreateComment post={post} />
-          </Spacing>
-        </Right>
-      </Container>
-    </Root>
-  );
+              <CreateComment post={post} />
+            </Spacing>
+          </Right>
+        </Container>
+      </Root>
+    );
+  } else {
+    return (
+      <Loading top="lg" />
+    )
+  }
 };
 
 PostPopup.propTypes = {

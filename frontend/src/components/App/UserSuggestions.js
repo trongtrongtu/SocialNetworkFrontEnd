@@ -89,48 +89,49 @@ const UserSuggestions = ({ pathname }) => {
 
   if (hideUserSuggestions) return null;
 
-  if (loading) {
-    return (
-      <Root>
-        <Loading />
-      </Root>
-    );
-  }
+  // if (loading) {
+  //   return (
+  //     <Root>
+  //       <Loading />
+  //     </Root>
+  //   );
+  // }
 
-  if (!dataArr.suggestPeople.length > 0) {
+  if (!(dataArr && dataArr.suggestPeople && dataArr.suggestPeople.length) > 0) {
     return null;
   }
+  if (dataArr && dataArr.suggestPeople) {
+    return (
+      <Root>
+        <H3>Suggestions For You</H3>
 
-  return (
-    <Root>
-      <H3>Suggestions For You</H3>
-
-      <List>
-        {dataArr.suggestPeople.map((user) => (
-          <ListItem key={user._id}>
-            <A
-              to={generatePath(Routes.USER_PROFILE, {
-                username: user.username,
-              })}
-            >
-              <Avatar image={user.image} />
-            </A>
-
-            <Spacing left="xs">
+        <List>
+          {dataArr.suggestPeople.map((user) => (
+            <ListItem key={user._id}>
               <A
                 to={generatePath(Routes.USER_PROFILE, {
                   username: user.username,
                 })}
               >
-                <FullName>{user.fullName}</FullName>
-                <UserName>@{user.username}</UserName>
+                <Avatar image={user.image} />
               </A>
-            </Spacing>
-          </ListItem>
-        ))}
-      </List>
-    </Root>
-  );
+
+              <Spacing left="xs">
+                <A
+                  to={generatePath(Routes.USER_PROFILE, {
+                    username: user.username,
+                  })}
+                >
+                  <FullName>{user.fullName}</FullName>
+                  <UserName>@{user.username}</UserName>
+                </A>
+              </Spacing>
+            </ListItem>
+          ))}
+        </List>
+      </Root>
+    );
+  }
 };
 
 UserSuggestions.propTypes = {

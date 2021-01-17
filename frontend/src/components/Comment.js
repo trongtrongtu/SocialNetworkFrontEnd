@@ -74,15 +74,15 @@ const Comment = ({ comment, postId, postAuthor }) => {
   });
 
   const handleDeleteComment = async () => {
-    await deleteComment({ variables: { input: { id: comment._id } } });
+    // await deleteComment({ variables: { input: { id: comment._id } } });
 
-    // Delete notification after comment deletion
-    if (auth.user._id !== postAuthor._id) {
-      const isNotified = postAuthor.notifications.find((n) => n.comment && n.comment.id === comment.id);
-      notification.remove({
-        notificationId: isNotified.id,
-      });
-    }
+    // // Delete notification after comment deletion
+    // if (auth.user._id !== postAuthor._id) {
+    //   const isNotified = postAuthor.notifications.find((n) => n.comment && n.comment.id === comment.id);
+    //   notification.remove({
+    //     notificationId: isNotified.id,
+    //   });
+    // }
   };
 
   return (

@@ -81,7 +81,7 @@ const Notification = ({ notification, close }) => {
           mutation: UPDATE_NOTIFICATION_SEEN,
           variables: {
             input: {
-              userId: auth.user._id,
+              userId: auth.user && auth.user._id,
             },
           },
           refetchQueries: () => [{ query: GET_AUTH_USER }],
@@ -90,7 +90,7 @@ const Notification = ({ notification, close }) => {
     };
 
     updateNotificationSeen();
-  }, [auth.user._id, auth.user.newNotifications.length, client]);
+  }, [auth.user, client]);
 
   if (!notification.follow && !notification.like && !notification.comment) {
     return null;
@@ -117,9 +117,9 @@ const Notification = ({ notification, close }) => {
       {notification.like && (
         <Action>
           likes your photo
-          <A to={generatePath(Routes.POST, { id: notification.like.post._id })}>
+          <A to={generatePath(Routes.POST, { id: notification.like.post && notification.like.post._id })}>
             <PostImage>
-              <Image src={notification.like.post.image} />
+              <Image src={notification.like.post && notification.like.post.image} />
             </PostImage>
           </A>
         </Action>
@@ -128,9 +128,9 @@ const Notification = ({ notification, close }) => {
       {notification.comment && (
         <Action>
           commented on your photo
-          <A to={generatePath(Routes.POST, { id: notification.comment.post._id })}>
+          <A to={generatePath(Routes.POST, { id: notification.comment.post && notification.comment.post._id })}>
             <PostImage>
-              <Image src={notification.comment.post.image} />
+              <Image src={notification.comment.post && notification.comment.post.image} />
             </PostImage>
           </A>
         </Action>

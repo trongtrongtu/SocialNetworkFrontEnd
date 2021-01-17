@@ -51,7 +51,7 @@ const AuthLayout = ({ refetch, onChange }) => {
 
         <Pages>
           <Switch>
-            <Route exact path={Routes.HOME} render={() => <SignUp refetch={refetch} />} />
+            <Route exact path={Routes.HOME} render={() => <SignUp refetch={refetch} onChange={onChange} />} />
             <Route exact path={Routes.FORGOT_PASSWORD} component={ForgotPassword} />
             <Route exact path={Routes.RESET_PASSWORD} render={() => <ResetPassword refetch={refetch} />} />
             <Redirect to={Routes.HOME} />

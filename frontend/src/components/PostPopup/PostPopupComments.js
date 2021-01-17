@@ -27,12 +27,12 @@ const Comments = styled.div`
 /**
  * Comments for PostPopup component
  */
-const PostPopupComments = ({ comments, postId, postAuthor, usedInModal }) => (
+const PostPopupComments = ({ dataComment, postId, postAuthor, usedInModal }) => (
   <Root usedInModal={usedInModal}>
     <Spacing top="xs" />
 
     <Comments usedInModal={usedInModal}>
-      {comments.map((comment) => (
+      {dataComment && dataComment.length > 0 && dataComment.map((comment) => (
         <Comment key={comment._id} comment={comment} postId={postId} postAuthor={postAuthor} />
       ))}
     </Comments>
@@ -40,7 +40,7 @@ const PostPopupComments = ({ comments, postId, postAuthor, usedInModal }) => (
 );
 
 PostPopupComments.propTypes = {
-  comments: PropTypes.array.isRequired,
+  dataComment: PropTypes.array.isRequired,
   postId: PropTypes.string.isRequired,
   postAuthor: PropTypes.object.isRequired,
 };

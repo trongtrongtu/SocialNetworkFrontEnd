@@ -31,13 +31,13 @@ const Empty = styled.div`
 const HeaderNotificationDropDown = ({ notificationRef, dropdownData, closeDropDown }) => {
   return (
     <Root ref={notificationRef}>
-      {!dropdownData.length ? (
+      {!(dropdownData && dropdownData.length) ? (
         <Empty>No new notifications.</Empty>
       ) : (
-        dropdownData.map((notification) => (
-          <Notification key={notification.id} notification={notification} close={closeDropDown} />
-        ))
-      )}
+          dropdownData.map((notification) => (
+            <Notification key={notification.id} notification={notification} close={closeDropDown} />
+          ))
+        )}
     </Root>
   );
 };

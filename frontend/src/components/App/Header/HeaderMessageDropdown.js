@@ -97,7 +97,7 @@ const HeaderMessageDropdown = ({ messageRef, dropdownData }) => {
         <Link to={generatePath(Routes.MESSAGES, { userId: Routes.NEW_ID_VALUE })}>New Message</Link>
       </Heading>
 
-      {dropdownData.map((user) => (
+      {dropdownData && dropdownData.map((user) => (
         <User key={user.id} to={generatePath(Routes.MESSAGES, { userId: user.id })}>
           <span>
             <Avatar image={user.image} size={50} />

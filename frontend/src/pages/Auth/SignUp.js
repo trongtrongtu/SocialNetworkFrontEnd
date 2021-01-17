@@ -12,6 +12,7 @@ import Head from 'components/Head';
 import { SIGN_UP } from 'graphql/user';
 
 import * as Routes from 'routes';
+import { signUp } from '../../networking/Server'
 
 const Root = styled(Container)`
   display: flex;
@@ -55,7 +56,7 @@ const Form = styled.div`
 /**
  * Sign Up page
  */
-const SignUp = ({ history, refetch }) => {
+const SignUp = ({ history, refetch, onChange }) => {
   const [error, setError] = useState('');
   const [values, setValues] = useState({
     fullName: '',
@@ -105,18 +106,30 @@ const SignUp = ({ history, refetch }) => {
     if (error) {
       setError(error);
       return false;
-    }
-
-    try {
-      const response = await signup({
-        variables: { input: { fullName, email, password, username } },
+    } else {
+      signUp({ fullName, email, password, username }).then((data) => {
+        if (data.result === 'ok') {
+          console.log('id: ', data && data.data && data.data._id)
+          localStorage.setItem('id', data && data.data && data.data._id);
+          onChange();
+          history.push(Routes.HOME);
+        } else {
+          setError('Account already exists');
+        }
+      }).catch((error) => {
+        console.error(error);
       });
-      localStorage.setItem('token', response.data.signup.token);
-      await refetch();
-      history.push(Routes.HOME);
-    } catch (error) {
-      setError(error.graphQLErrors[0].message);
     }
+    // try {
+    //   const response = await signup({
+    //     variables: { input: { fullName, email, password, username } },
+    //   });
+    //   localStorage.setItem('token', response.data.signup.token);
+    //   await refetch();
+    //   history.push(Routes.HOME);
+    // } catch (error) {
+    //   setError(error.graphQLErrors[0].message);
+    // }
   };
 
   const { fullName, email, password, username } = values;

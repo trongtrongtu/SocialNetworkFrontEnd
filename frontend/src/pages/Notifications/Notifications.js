@@ -56,42 +56,46 @@ const Notifications = () => {
   }, []);
 
   const renderContent = () => {
-    if (loading && networkStatus === 1) {
-      return <Skeleton height={56} bottom="xxs" count={NOTIFICATIONS_PAGE_NOTIFICATION_LIMIT} />;
+    // if (loading && networkStatus === 1) {
+    //   return <Skeleton height={56} bottom="xxs" count={NOTIFICATIONS_PAGE_NOTIFICATION_LIMIT} />;
+    // }
+    if (dataArr && dataArr.getUserNotifications) {
+      const { notifications, count } = dataArr.getUserNotifications;
+      if (!(notifications && notifications.length)) {
+        return <Empty text="No notifications yet." />;
+      }
+
+      return (
+        <InfiniteScroll
+          data={notifications}
+          dataKey="getUserNotifications.notifications"
+          count={parseInt(count)}
+          variables={variables}
+          fetchMore={fetchMore}
+        >
+          {(data) => {
+            const showNextLoading = loading && networkStatus === 3 && count !== data.length;
+
+            return (
+              <>
+                <List>
+                  {notifications.map((notification) => (
+                    <Notification key={notification._id} notification={notification} close={() => false} />
+                  ))}
+                </List>
+
+                {showNextLoading && <Loading top="lg" />}
+              </>
+            );
+          }}
+        </InfiniteScroll>
+      );
+    } else {
+      return (
+        <Skeleton height={56} bottom="xxs" count={NOTIFICATIONS_PAGE_NOTIFICATION_LIMIT} />
+      )
     }
-
-    const { notifications, count } = dataArr.getUserNotifications;
-    if (!notifications.length) {
-      return <Empty text="No notifications yet." />;
-    }
-
-    return (
-      <InfiniteScroll
-        data={notifications}
-        dataKey="getUserNotifications.notifications"
-        count={parseInt(count)}
-        variables={variables}
-        fetchMore={fetchMore}
-      >
-        {(data) => {
-          const showNextLoading = loading && networkStatus === 3 && count !== data.length;
-
-          return (
-            <>
-              <List>
-                {notifications.map((notification) => (
-                  <Notification key={notification._id} notification={notification} close={() => false} />
-                ))}
-              </List>
-
-              {showNextLoading && <Loading top="lg" />}
-            </>
-          );
-        }}
-      </InfiniteScroll>
-    );
-  };
-
+  }
   return (
     <Content>
       <Root maxWidth="md">
